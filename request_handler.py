@@ -18,11 +18,12 @@ class HandleRequests(BaseHTTPRequestHandler):
     """Controls the functionality of any GET, PUT, POST, DELETE requests to the server
     """
     def parse_url(self, path):
-        """ """
+        """ 
         # Just like splitting a string in JavaScript. If the
         # path is "/animals/1", the resulting list will
         # have "" at index 0, "animals" at index 1, and "1"
         # at index 2.
+        """
         path_params = path.split("/")
         resource = path_params[1]
         id = None
@@ -117,6 +118,7 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     # A method that handles any PUT request.
     def do_PUT(self):
+        """ Handles the PUT """
         self._set_headers(204)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
@@ -147,7 +149,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         headers on the response
 
         Args:
-            status (number): the status code to return to the front end
+            status (204): the status code to return to the front end
         """
         self.send_response(status)
         self.send_header('Content-type', 'application/json')
@@ -167,6 +169,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_DELETE(self):
+        """ Handles DELETE requests """
         # Set a 204 response code
         self._set_headers(204)
 

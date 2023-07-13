@@ -6,10 +6,12 @@ CUSTOMERS = [
 ]
 
 def get_all_customers():
+    """ Gets all customers """
     return CUSTOMERS
 
 # Function with a single parameter
 def get_single_customer(id):
+    """ Gets single customer by id """
     # Variable to hold the found customer, if it exists
     requested_customer = None
 
@@ -24,6 +26,7 @@ def get_single_customer(id):
     return requested_customer
 
 def create_customer(customer):
+    """ Creates customer """
     # Get the id value of the last customer in the list
     max_id = CUSTOMERS[-1]["id"]
 
@@ -40,6 +43,7 @@ def create_customer(customer):
     return customer
 
 def delete_customer(id):
+    """ Deletes customer """
     # Initial -1 value for customers index, in case one isn't found
     customers_index = -1
 
@@ -55,6 +59,7 @@ def delete_customer(id):
         CUSTOMERS.pop(customers_index)
 
 def update_customer(id, new_customer):
+    """ Edits customer """
     # Iterate the CUSTOMERS list, but use enumerate() so that
     # you can access the index value of each item.
     for index, customer in enumerate(CUSTOMERS):
