@@ -1,6 +1,7 @@
 import sqlite3
 import json
 from models import Employee
+from models import Location
 
 EMPLOYEES = [
     {
@@ -8,6 +9,7 @@ EMPLOYEES = [
         "name": "Jenna Solis"
     }
 ]
+
 
 def get_all_employees():
     """ Gets all employees """
@@ -24,8 +26,12 @@ def get_all_employees():
             a.id,
             a.name,
             a.address,
-            a.location_id
-        FROM employee a
+            a.location_id,
+            l.name location_name,
+            l.address location_address
+        FROM Employee a
+        JOIN Location l
+            ON l.id = a.location_id
         """)
 
         # Initialize an empty list to hold all employee representations
@@ -42,13 +48,22 @@ def get_all_employees():
             # exact order of the parameters defined in the
             # Employee class above.
             employee = Employee(row['id'], row['name'], row['address'],
-                            row['location_id'])
+                                row['location_id'])
+
+            # Create a Customer instance from the current row
+            location = Location(
+                row['id'], row['location_name'], row['location_address'])
+
+            # Add the dictionary representation of the location to the employee
+            employee.location = location.__dict__
 
             employees.append(employee.__dict__)
 
     return employees
 
 # Function with a single parameter
+
+
 def get_single_employee(id):
     """ Gets single employee and additional details """
     with sqlite3.connect("./kennel.sqlite3") as conn:
@@ -65,7 +80,7 @@ def get_single_employee(id):
             a.location_id
         FROM employee a
         WHERE a.id = ?
-        """, ( id, ))
+        """, (id, ))
 
         # Load the single result into memory
         data = db_cursor.fetchone()
@@ -75,6 +90,7 @@ def get_single_employee(id):
                             data['location_id'])
 
         return employee.__dict__
+
 
 def create_employee(employee):
     """ Creates employee """
@@ -93,6 +109,7 @@ def create_employee(employee):
     # Return the dictionary with `id` property added
     return employee
 
+
 def delete_employee(id):
     """ Deletes employee """
     # Initial -1 value for employee index, in case one isn't found
@@ -109,15 +126,35 @@ def delete_employee(id):
     if employee_index >= 0:
         EMPLOYEES.pop(employee_index)
 
+
 def update_employee(id, new_employee):
-    """ Edits employee """
-    # Iterate the EMPLOYEES list, but use enumerate() so that
-    # you can access the index value of each item.
-    for index, employee in enumerate(EMPLOYEES):
-        if employee["id"] == id:
-            # Found the employee. Update the value.
-            EMPLOYEES[index] = new_employee
-            break
+    """ Updates an employee """
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        UPDATE Employee
+            SET
+                name = ?,
+                address = ?,
+                location_id = ?
+                          
+        WHERE id = ?
+        """, (new_employee['name'], new_employee['breed'],
+              new_employee['status'], new_employee['locationId'],
+              new_employee['customerId'], id, ))
+
+        # Were any rows affected?
+        # Did the client send an `id` that exists?
+        rows_affected = db_cursor.rowcount
+
+    if rows_affected == 0:
+        # Forces 404 response by main module
+        return False
+    else:
+        # Forces 204 response by main module
+        return True
+
 
 def get_employee_by_location(location_id):
     """ Gets a employee by their location_id """

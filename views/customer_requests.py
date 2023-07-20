@@ -30,7 +30,7 @@ def get_all_customers():
             a.address,
             a.email,
             a.password
-        FROM customer a
+        FROM Customer a
         """)
 
         # Initialize an empty list to hold all customer representations
@@ -121,14 +121,32 @@ def delete_customer(id):
 
 
 def update_customer(id, new_customer):
-    """ Edits customer """
-    # Iterate the CUSTOMERS list, but use enumerate() so that
-    # you can access the index value of each item.
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            # Found the customer. Update the value.
-            CUSTOMERS[index] = new_customer
-            break
+    """ Updates a customer """
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        UPDATE Customer
+            SET
+                name = ?,
+                address = ?,
+                email = ?,
+                password = ?
+                
+        WHERE id = ?
+        """, (new_customer['name'], new_customer['address'],
+              new_customer['email'], new_customer['password'], id, ))
+
+        # Were any rows affected?
+        # Did the client send an `id` that exists?
+        rows_affected = db_cursor.rowcount
+
+    if rows_affected == 0:
+        # Forces 404 response by main module
+        return False
+    else:
+        # Forces 204 response by main module
+        return True
 
 
 def get_customer_by_email(email):
