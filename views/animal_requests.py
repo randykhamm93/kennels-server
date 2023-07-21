@@ -21,17 +21,18 @@ def get_all_animals():
             a.name,
             a.breed,
             a.status,
-            a.location_id,
-            a.customer_id,
+            a.location_id, 
+            a.customer_id,  
+            l.name AS location_name,
+            l.address AS location_address,
             c.name AS customer_name,
             c.address AS customer_address,
             c.email AS customer_email,
-            c.password AS customer_password,
-            l.name AS location_name,
-            l.address AS location_address
+            c.password AS customer_password
         FROM Animal a
-        JOIN Customer c ON c.id = a.customer_id
-        JOIN Location l ON l.id = a.location_id""")
+        JOIN Location l ON l.id = a.location_id
+        JOIN Customer c ON c.id = a.customer_id""")
+
 
         # Initialize an empty list to hold all animal representations
         animals = []
@@ -41,18 +42,30 @@ def get_all_animals():
 
         # Iterate list of data returned from database
         for row in dataset:
-
-            # Create an animal instance from the current row
-            animal = Animal(row['id'], row['name'], row['breed'], row['status'],
-                            row['location_id'], row['customer_id'])
+            # Create a Location instance from the current row
+            location = Location(
+                row['location_id'],
+                row['location_name'],
+                row['location_address']
+            )
 
             # Create a Customer instance from the current row
-            location = Location(
-                row['id'], row['location_name'], row['location_address'])
-
             customer = Customer(
-                row['id'], row['customer_name'], row['customer_address'], row['customer_email'],
+                row['customer_id'],
+                row['customer_name'],
+                row['customer_address'],
+                row['customer_email'],
                 row['customer_password']
+            )
+
+            # Create an animal instance from the current row
+            animal = Animal(
+                row['id'],
+                row['name'],
+                row['breed'],
+                row['status'],
+                row['customer_id'],  # Swap location_id with customer_id
+                row['location_id'],  # Swap customer_id with location_id
             )
 
             # Add the dictionary representation of the location to the animal
@@ -65,6 +78,7 @@ def get_all_animals():
             animals.append(animal.__dict__)
 
     return animals
+
 
 
 def get_single_animal(id):
@@ -115,15 +129,15 @@ def create_animal(new_animal):
         # The `lastrowid` property on the cursor will return
         # the primary key of the last thing that got added to
         # the database.
-        id = db_cursor.lastrowid
+        id = db_cursor.lastrowidD
 
         # Add the `id` property to the animal dictionary that
         # was sent by the client so that the client sees the
         # primary key in the response.
         new_animal['id'] = id
 
-
     return new_animal
+
 
 
 def delete_animal(id):
@@ -152,8 +166,8 @@ def update_animal(id, new_animal):
                 customer_id = ?
         WHERE id = ?
         """, (new_animal['name'], new_animal['breed'],
-              new_animal['status'], new_animal['location_id'],
-              new_animal['customer_id'], id, ))
+              new_animal['status'], new_animal['locationId'],
+              new_animal['customerId'], id, ))
 
         # Were any rows affected?
         # Did the client send an `id` that exists?

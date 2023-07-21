@@ -28,10 +28,10 @@ def get_all_locations():
         # Write the SQL query to get the information you want
         db_cursor.execute("""
         SELECT
-            a.id,
-            a.name,
-            a.address
-        FROM Location a
+            l.id,
+            l.name,
+            l.address
+        FROM Location l
         """)
 
         # Initialize an empty list to hold all location representations
@@ -64,11 +64,11 @@ def get_single_location(id):
         # into the SQL statement.
         db_cursor.execute("""
         SELECT
-            a.id,
-            a.name,
-            a.address
-        FROM location a
-        WHERE a.id = ?
+            l.id,
+            l.name,
+            l.address
+        FROM location l
+        WHERE l.id = ?
         """, (id, ))
 
         # Load the single result into memory

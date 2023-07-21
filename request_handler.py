@@ -95,7 +95,6 @@ class HandleRequests(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode())
 
     # Here's a method on the class that overrides the parent's method.
-
     def do_POST(self):
         """Handles the POST"""
         self._set_headers(201)
@@ -152,7 +151,6 @@ class HandleRequests(BaseHTTPRequestHandler):
             success = update_employee(id, post_body)
         elif resource == "customers":
             success = update_customer(id, post_body)
-
 
         if success:
             self._set_headers(204)
